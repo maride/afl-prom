@@ -26,19 +26,14 @@ func getFuzzersToWatch() ([]string, error) {
 
 // Registers the given paths as fuzzer directories which should be monitored
 func registerFuzzers(targets []string) {
+	// First, create fuzzer instances based on the directory
 	for _, f := range targets {
-		var tmpFuzzer Fuzzer
-		tmpFuzzer.afl_directory = f
-		parseErr := tmpFuzzer.ParseStatsFile()
-
-		if parseErr != nil {
-			log.Printf("Encountered error while parsing %s: %s", f, parseErr.Error())
-			break
-		}
-
-		// Append fuzzer to our list of registered fuzzers
+		tmpFuzzer := CreateFuzzer(f)
 		registeredFuzzers = append(registeredFuzzers, tmpFuzzer)
 	}
+
+	// Create gauges
+	InitializeGauges()
 }
 
 // Watch over the fuzzer(s)
