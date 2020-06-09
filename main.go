@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 
@@ -9,6 +10,10 @@ import (
 
 // Main function
 func main() {
+	// Register flags
+	registerWatcherFlags()
+	flag.Parse()
+
 	// Check args
 	targetFuzzers, targetErr := getFuzzersToWatch()
 	if targetErr != nil {

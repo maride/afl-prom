@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -9,15 +10,19 @@ import (
 
 var (
 	registeredFuzzers []Fuzzer
+	sleepSecs *int
 )
+
+func registerWatcherFlags() {
+	sleepSecs = flag.Int("scan-delay", 30, "Seconds to sleep between scans of the fuzzer directories")
+}
 
 // Returns the path to every fuzzer to watch
 func getFuzzersToWatch() ([]string, error) {
-	for i, a := range os.Args {
-		if a == "--" {
-			// Choose arguments after that one as the target fuzzer directories
-			return os.Args[i+1:], nil
-		}
+	// flag.Args() returns all arguments after --
+	fuzzers := flag.Args()
+	if len(fuzzers) > 0 {
+		return fuzzers, nil
 	}
 
 	// Wrong usage - construct a helpful error message
@@ -50,6 +55,6 @@ func watchFuzzers() {
 		}
 
 		// and sleep
-		time.Sleep(30 * time.Second)
+		time.Sleep(time.Duration(*sleepSecs) * time.Second)
 	}
 }
